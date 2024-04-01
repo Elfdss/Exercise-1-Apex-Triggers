@@ -1,0 +1,13 @@
+trigger contactTriggers on Contact(before insert, before update,after update){
+    
+    if(trigger.isBefore && trigger.isUpdate){
+        map<id,string> test = setPrimaryContactPhone.handlePrimaryContactPhone(trigger.new, trigger.oldMap);
+        UpdateRelatedContactsPrimaryPhone job = new UpdateRelatedContactsPrimaryPhone(test);
+		System.enqueueJob(job);
+    }
+    if(trigger.isBefore && Trigger.isInsert){
+        map<id,string> test =setPrimaryContactPhone.handlePrimaryContactInsert(Trigger.new);
+        UpdateRelatedContactsPrimaryPhone job = new UpdateRelatedContactsPrimaryPhone(test);
+		System.enqueueJob(job);
+    }
+}
