@@ -1,0 +1,53 @@
+public class setPrimaryContactPhone {
+    
+    public static map<id,String> handlePrimaryContactPhone(List<Contact> newContactList ,map<id,contact> oldContactMap){   
+        map<id,string> accountIdXContactPhoneMap = new map<id,string>();
+        
+        List<id> accountIds = new List<id>();
+        for(contact con : newContactList){
+            accountIds.add(con.accountId);
+        }
+        Map<id,contact> idXContact = new Map<id,contact>();
+        
+        for(contact contact1 :[SELECT Primary_Contact__c,accountid FROM contact where accountid IN:accountIds]){
+            if(contact1.Primary_Contact__c == true){
+                idXContact.put(contact1.AccountId,contact1);
+            }
+            
+        }                         
+            
+        for(contact contact :newContactList){
+            if(idXContact.get(contact.accountid) != Null && oldContactMap.get(contact.id)?.Primary_Contact__c == false && contact.Primary_Contact__c == true){
+                contact.adderror('There is a problem while upserting records');
+            }
+            if(oldContactMap.get(contact.id)?.Primary_Contact__c == false && contact.Primary_Contact__c == true && contact.Primary_Contact_Phone__c != null){
+                accountIdXContactPhoneMap.put(contact.AccountId, contact.Primary_Contact_Phone__c);
+            }     
+        }
+        return accountIdXContactPhoneMap;
+    }
+    public static map<id,String> handlePrimaryContactInsert(List<Contact> newContactList){
+		List<id> accountIds = new List<id>();
+        map<id,string> accountIdXContactPhoneMap = new map<id,string>();
+        for(contact con : newContactList){
+            accountIds.add(con.accountId);
+        }
+        Map<id,contact> idXContact = new Map<id,contact>();
+        
+        for(contact contact1 :[SELECT Primary_Contact__c,accountid FROM contact where accountid IN:accountIds]){
+            if(contact1.Primary_Contact__c == true){
+                idXContact.put(contact1.AccountId,contact1);
+            }
+            
+        }                         
+            
+        for(contact contact :newContactList){
+            if(idXContact.get(contact.accountid) != Null){
+                contact.adderror('There is a problem while upserting records');
+            }else{
+                accountIdXContactPhoneMap.put(contact.AccountId, contact.Primary_Contact_Phone__c);
+            }        
+    	}
+        return accountIdXContactPhoneMap;
+    }
+}
