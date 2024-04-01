@@ -1,0 +1,22 @@
+public class UpdateRelatedContactsPrimaryPhone implements Queueable {
+    private Map<Id, String> accountIdXPrimaryPhone;
+
+    public UpdateRelatedContactsPrimaryPhone(Map<Id, String> accountIdXPrimaryPhone) {
+        this.accountIdXPrimaryPhone = accountIdXPrimaryPhone;
+    }
+
+    public void execute(QueueableContext context) {
+        updateRelatedContactsPrimaryPhone(accountIdXPrimaryPhone);
+    }
+
+    public static void updateRelatedContactsPrimaryPhone(Map<Id, String> accountIdXPrimaryPhone) {
+        List<Contact> contactsToUpdate = new List<Contact>();
+        for (Contact contact : [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIdXPrimaryPhone.keySet()]) {
+            contact.Primary_Contact_Phone__c = accountIdXPrimaryPhone.get(contact.AccountId);
+            contactsToUpdate.add(contact);
+        }
+        
+         database.update(contactsToUpdate, false);
+        
+    }
+}
